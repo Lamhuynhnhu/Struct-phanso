@@ -54,13 +54,6 @@
       }
     default: printf ("nhap sai thang hoac nam ");
 }
-		 
-		 	  	 	
- 		
- 	
- 	
- 	
- 	
  }
 
 
