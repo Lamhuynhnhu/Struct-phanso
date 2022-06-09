@@ -1,5 +1,5 @@
 #include<stdio.h>
- 
+ // tao file
  int main()
  {
  	FILE*fptr;
