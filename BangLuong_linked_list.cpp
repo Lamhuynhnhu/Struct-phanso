@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
 #include <string.h>
 #define N 5
 
@@ -34,7 +35,7 @@ NhanVien CreateNhanVien(int ms, char* hoten, int luong)
 	nv.maNV = ms;
 	nv.hoTen = hoten;
 	nv.luong = luong;
-	
+		
 	return nv;
 }
 
@@ -114,17 +115,37 @@ Node* SearchByMaNV(LinkedList l, int ma)
 	return p;
 }
 
-Node* SearchByName(LinkedList l, char* searchKey)
+/*Tim boi tu khoa trong ten 
+Return: mot List moi
+*/
+LinkedList SearchByName(LinkedList l, char* searchKey)
 {
 	Node *p = l.pHead;
 	char* found = NULL;
+	
+	LinkedList resultList ;
+	CreateList(resultList);
+	
 	while ((p!=NULL))
 	{
-		found = strstr(p->Info.hoTen, searchKey);
-		if (found)		
-			PrintNode(p);
+		found = strstr(p->Info.hoTen, searchKey); // Strstr: ham tim chuoi con trong chuoi me
+		if (found)
+		{		
+			Node* newP = CreateNode(p->Info); // Tao node moi voi Info cua p ; Luu y khong duoc su dung p truc tiep
+			
+			AddFirst(resultList, newP);
+			printf("Found\n");
+		}
 		p=p->pNext;
 	}
+	return resultList;
+}
+
+Node* SearchByExactName(LinkedList l, char* searchKey)
+{	
+	Node *p = l.pHead;
+	while ((p!=NULL)&&(strcmp(searchKey, p->Info.hoTen)))
+		p=p->pNext;
 	return p;
 }
 
@@ -147,7 +168,31 @@ void PrintList(LinkedList &l)
 		}		
 	}
 }
-
+/* Enter new node from keyboard */
+Node* EnterNewNode()
+{
+	printf("Nhap Nhan vien moi\n");
+	int ma, l;
+	
+	char* ht; // Bien con tro kieu char de chua ten NhanVien
+	ht = (char*)malloc(30* sizeof(char)); // Cap phat vung nho cho bien con tro
+	
+	printf("Ma so: "); 
+	scanf("%d", &ma);
+	
+	printf("Ho ten: "); 
+	fflush(stdin); 
+	gets(ht);
+	
+	
+	printf("Luong: "); 
+	scanf("%d", &l);
+	
+	//printf("%10d%20s%10d", ma,ht,l);
+	NhanVien n = CreateNhanVien(ma,ht,l);
+	
+	return CreateNode(n);		
+}
 
 int main()
 {
@@ -168,18 +213,106 @@ int main()
 	}
 	
 	PrintList(myNhanViens);
-	printf("\n==========Cac thao tac tren Linked List=========\n");
+	//printf("\n==========Cac thao tac tren Linked List=========\n");
 	
-	int ms = 3;
+	/*int ms = 3;
 	printf("Tim kiem: Nhan vien co ma so %d la \n", ms);
 	Node* p = SearchByMaNV(myNhanViens, ms);
 	PrintNode(p);
 	
 	char* qName = "n";
 	printf("\n\nTim kiem: Nhan vien co ten chua tu khoa %s la \n", qName);
-	p = SearchByName(myNhanViens, qName );
+	p = SearchByName(myNhanViens, qName ); */
+	Node *new_ele, *p;
+	LinkedList resultList;
+	int key = 1;
+	char q[30];
+	while (key)
+	{
+		printf("\n\n===============MENU=================\n");
+		printf("1. In danh sach\n");
+		printf("2. Them phan tu dau danh sach\n");
+		printf("3. Them phan tu cuoi danh sach\n");
+		printf("4. Tim phan theo ten chinh xac\n");
+		printf("5. Tim phan tu theo tu khoa trong ten\n");
+		printf("6. Them phan tu tai sau nut vua tim\n");		
+		printf("7. Xoa phan tu dau danh sach\n");
+		printf("8. Xoa phan tu cuoi danh sach\n");
+		printf("9. Xoa phan tu theo ten chinh xac\n");
+		
+		printf("0. Thoat\n");
+		printf("\n=====================================\n");
+		
+		
+		printf("Vui long chon thao tac ");
+		scanf("%d",&key); 
+		printf("Ban lua chon %d\n\n", key);
+		switch (key)
+		{
+			case 0:				
+				break;
+				
+			case 1:
+				PrintList(myNhanViens);
+				break;
+				
+			case 2:
+				printf("---Nhap phan tu moi va them vao dau danh sach---\n");
+								
+				new_ele  = EnterNewNode();				
+				AddFirst(myNhanViens, new_ele);
+				
+				printf("\n \n =======Danh Sach sau khi them phan tu ======\n");
+				PrintList(myNhanViens);
+				break;
+			case 3:
+				printf("---Nhap phan tu moi va them vao cuoi danh sach---\n");
+								
+				new_ele  = EnterNewNode();				
+				AddLast(myNhanViens, new_ele);
+				
+				printf("\n \n =======Danh Sach sau khi them phan tu ======\n");
+				PrintList(myNhanViens);
+				break;
+				
+			case 4:
+				printf("Tim phan tu theo ten\n")	;
+				
+				printf("Nhap ten nhan vien can tim kiem: ");
+				fflush(stdin);
+				gets(q);
+				
+				p = SearchByExactName(myNhanViens, q);
+				if (p!=NULL)
+				{
+					PrintNode(p);
+				}
+				else
+				{
+					printf("Khong tim thay: %s \n", ht);
+				}
+				break;	
+							
+			case 5:				
+				printf("Tim theo tu khoa trong ten\n");				
+				printf("Nhap ten nhan vien can tim kiem: ");
+				fflush(stdin);
+				gets(q);
+					
+				resultList = SearchByName(myNhanViens, q);
+				if (resultList.pHead!=NULL)					
+					PrintList(resultList);
+				else
+					printf("Khong tim thay: %s \n", ht);					
+				break;						
+				
+			default:
+				printf("Chuc nang chua cai dat");
+		}	
+		
+	}
 	
-	
+	return 0;
 	
 	return 0;
 }
